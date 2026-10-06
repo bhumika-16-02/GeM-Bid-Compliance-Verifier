@@ -1,0 +1,17 @@
+{
+  "bidder_id": "B-001",
+  "company_name": "Sunrise Technologies Pvt Ltd",
+  "documents": [
+    { "doc_type": "PAN", "source_file": "pan.pdf", "confidence": 0.97,
+      "fields": { "pan_number": "ABCDE1234F", "name": "Sunrise Technologies Pvt Ltd" } },
+    { "doc_type": "GST", "source_file": "gst.pdf", "confidence": 0.94,
+      "fields": { "gstin": "29ABCDE1234F1Z5", "legal_name": "Sunrise Technologies Pvt Ltd", "valid_till": "2027-03-31" } },
+    { "doc_type": "UDYAM", "source_file": "udyam.pdf", "confidence": 0.91,
+      "fields": { "udyam_number": "UDYAM-KA-01-0012345", "category": "Small" } },
+    { "doc_type": "OEM", "source_file": "oem.pdf", "confidence": 0.78,
+      "fields": { "oem_name": "Dell India", "authorized_for": "Laptops", "valid_till": "2026-12-31" } },
+    { "doc_type": "LOCAL_CONTENT", "source_file": "lc.pdf", "confidence": 0.88,
+      "fields": { "local_content_percent": "45" } }
+  ]
+}
+

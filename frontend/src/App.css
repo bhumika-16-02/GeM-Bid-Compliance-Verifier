@@ -13,3 +13,10 @@ nav button.on { background: #1f4fd8; color: #fff; border-color: #1f4fd8; }
 .tag { background: #e8eefc; color: #1f4fd8; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; min-width: 90px; text-align: center; }
 .badge { margin-left: auto; font-size: 12px; background: #fde8e8; color: #b42318; padding: 2px 8px; border-radius: 4px; }
 .error { color: #b42318; }
+.doc-head { display: flex; justify-content: space-between; align-items: center; }
+.doc-head h3 { margin: 0; }
+.badge.ok { background: #e3f6ea; color: #137333; }
+.field { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+.field span { min-width: 170px; font-size: 14px; text-transform: capitalize; }
+.field input[type='text'], .field input:not([type]) { flex: 1; padding: 8px; border: 1px solid #c9d1de; border-radius: 6px; }
+button.primary { padding: 10px 20px; background: #137333; color: #fff; border: 0; border-radius: 6px; cursor: pointer; margin-bottom: 24px; }
