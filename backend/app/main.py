@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from sqlmodel import Session, delete
+from app.routes.tender import router as tender_router
 
 from app.models import (
     AuditLog,
@@ -17,6 +18,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.include_router(tender_router)
 
 # -----------------------------
 # Request models
