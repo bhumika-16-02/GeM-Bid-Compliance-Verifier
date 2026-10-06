@@ -78,6 +78,10 @@ async def upload_bidder_documents(
             fields = {
                 "udyam_number": extracted.get("udyam"),
             }
+        elif doc_type == "LOCAL_CONTENT":
+            fields = {
+                "local_content_percent": extracted.get("local_content"),
+    }
 
         documents.append(
             {
