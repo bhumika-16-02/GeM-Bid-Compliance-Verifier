@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from sqlmodel import Session, delete
 from app.routes.tender import router as tender_router
+from app.routes.bidder import router as bidder_router
 
 from app.models import (
     AuditLog,
@@ -19,7 +20,7 @@ app = FastAPI(
 )
 
 app.include_router(tender_router)
-
+app.include_router(bidder_router)
 # -----------------------------
 # Request models
 # -----------------------------
@@ -182,13 +183,86 @@ def get_report(
             "error": "Bidder not found"
         }
 
-    checks = session.exec(
-        __import__("sqlmodel").select(ComplianceCheck).where(
-            ComplianceCheck.bidder_id == bidder_id
+    result = calculate_compliance(
+        pan=bidder.pan,
+        gst=bidder.gst,
+        udyam=bidder.udyam,
+        oem=bidder.oem,
+        local_content=bidder.local_content,
+        blacklist_status=bidder.blacklist_status,
+    )
+
+    requirement_text = {
+        "PAN": "Valid PAN card of the bidder",
+        "GST": "Valid GST registration certificate",
+        "Udyam": "Udyam (MSME) registration certificate",
+        "OEM": "OEM authorization letter",
+        "Local Content": "Local content of at least 50%",
+        "Blacklist": "Bidder must not be debarred or blacklisted",
+    }
+
+    checks = []
+
+    requirement_ids = {
+        "PAN": "R1",
+        "GST": "R2",
+        "Udyam": "R3",
+        "OEM": "R4",
+        "Local Content": "R5",
+        "Blacklist": "R6",
+    }
+
+    for requirement, passed in result["checks"].items():
+        checks.append(
+            {
+                "requirement_id": requirement_ids[requirement],
+                "requirement": requirement_text[requirement],
+                "status": "PASS" if passed else "FAIL",
+                "evidence": (
+                    "Requirement satisfied"
+                    if passed
+                    else "Requirement not satisfied"
+                ),
+                "source": "backend verification",
+                "rule": requirement.upper().replace(" ", "_"),
+            }
         )
-    ).all()
+
+    if result["risk"] == "LOW":
+        recommendation = "APPROVE"
+    elif result["risk"] == "MEDIUM":
+        recommendation = "REVIEW"
+    else:
+        recommendation = "REJECT"
+
+    passed_count = sum(result["checks"].values())
+    total_count = len(result["checks"])
+
+    summary = (
+        f"{passed_count} of {total_count} requirements passed. "
+        f"Risk level is {result['risk']}."
+    )
 
     return {
-        "bidder": bidder,
+        "bidder_id": f"B-{bidder.id:03d}",
+        "tender_id": "T-001",
+        "score": result["score"],
+        "risk": result["risk"],
+        "recommendation": recommendation,
+        "summary": summary,
         "checks": checks,
+    }
+
+class DecisionRequest(BaseModel):
+    bidder_id: str
+    decision: str
+    reason: str | None = None
+
+
+@app.post("/decision")
+def submit_decision(request: DecisionRequest):
+    return {
+        "ok": True,
+        "decision": request.decision,
+        "reason": request.reason,
     }
