@@ -1,6 +1,9 @@
+ *{
+  color:#1b2433
+ } 
 body { margin: 0; font-family: system-ui, sans-serif; background: #f4f6fa; color: #1b2433; }
 .app { max-width: 900px; margin: 0 auto; padding: 24px; }
-header h1 { margin: 0; }
+header h1 { margin: 0; color: black;}
 .muted { color: #6b7686; font-size: 14px; }
 nav { display: flex; gap: 8px; margin: 16px 0; }
 nav button { padding: 8px 16px; border: 1px solid #c9d1de; background: #fff; border-radius: 6px; cursor: pointer; }
@@ -20,3 +23,23 @@ nav button.on { background: #1f4fd8; color: #fff; border-color: #1f4fd8; }
 .field span { min-width: 170px; font-size: 14px; text-transform: capitalize; }
 .field input[type='text'], .field input:not([type]) { flex: 1; padding: 8px; border: 1px solid #c9d1de; border-radius: 6px; }
 button.primary { padding: 10px 20px; background: #137333; color: #fff; border: 0; border-radius: 6px; cursor: pointer; margin-bottom: 24px; }
+.score-card { display: flex; gap: 20px; align-items: center; }
+.score-circle { min-width: 96px; height: 96px; border-radius: 50%; background: #1f4fd8; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
+.risk { padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.risk-low { background: #e3f6ea; color: #137333; }
+.risk-medium { background: #fff4d6; color: #8a5a00; }
+.risk-high { background: #fde8e8; color: #b42318; }
+.check-row { border-bottom: 1px solid #eef1f6; }
+.check-main { display: flex; gap: 12px; align-items: center; padding: 12px 0; cursor: pointer; }
+.chevron { margin-left: auto; }
+.check-detail { padding: 0 0 12px 78px; }
+.status { min-width: 66px; text-align: center; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.status-pass { background: #e3f6ea; color: #137333; }
+.status-fail { background: #fde8e8; color: #b42318; }
+.status-review { background: #fff4d6; color: #8a5a00; }
+textarea { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #c9d1de; border-radius: 6px; font-family: inherit; }
+.decision-buttons { display: flex; gap: 10px; margin-top: 12px; }
+.decision-buttons button { margin-left: 0; }
+.card .decision-buttons button.approve { background: #137333; }
+.card .decision-buttons button.reject { background: #b42318; }
+.card .decision-buttons button.override { background: #8a5a00; }

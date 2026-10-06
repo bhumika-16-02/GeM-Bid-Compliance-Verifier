@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import UploadPage from './pages/UploadPage'
 import BidderPage from './pages/BidderPage'
+import ResultsPage from './pages/ResultsPage'
+import { saveBidderFields } from './api'
 import './App.css'
 
 export default function App() {
@@ -8,9 +10,10 @@ export default function App() {
   const [tender, setTender] = useState(null)
   const [bidder, setBidder] = useState(null)
 
-  function handleBidderReady(b) {
+  async function handleBidderReady(b) {
+    await saveBidderFields(b)   // send the officer's corrections first
     setBidder(b)
-    setTab('results') // Results page comes in the next batch
+    setTab('results')
   }
 
   return (
@@ -26,11 +29,7 @@ export default function App() {
       </nav>
       {tab === 'tender' && <UploadPage onTenderReady={setTender} />}
       {tab === 'bidder' && <BidderPage tender={tender} onBidderReady={handleBidderReady} />}
-      {tab === 'results' && (
-        <div className="card">
-          {bidder ? `Ready to check ${bidder.company_name} (next batch).` : 'Complete the Bidder step first.'}
-        </div>
-      )}
+      {tab === 'results' && <ResultsPage bidder={bidder} />}
     </div>
   )
 }
