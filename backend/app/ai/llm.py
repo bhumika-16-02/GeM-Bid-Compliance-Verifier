@@ -54,6 +54,11 @@ def ask_json(prompt, system=""):
             break
         except Exception as e:
             msg = str(e)
+            if "PerDay" in msg:
+                raise RuntimeError(
+                    "Daily free quota used up for this model. "
+                    "Switch GEMINI_MODEL or use another key."
+                ) from e
             temporary = "503" in msg or "429" in msg or "UNAVAILABLE" in msg
             if temporary and attempt < 4:
                 wait = 2 ** attempt * 3   # waits 3, 6, 12, 24 seconds
