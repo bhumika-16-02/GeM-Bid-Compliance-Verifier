@@ -36,6 +36,20 @@ def retrieve(query, n=3, req_type=None):
         )
     return rules
 
+def get_rule(rule_id):
+    """Fetch one rule by its exact id (for example 'LC-02'). Returns None if missing."""
+    collection = chromadb.PersistentClient(path=str(DB_DIR)).get_collection(COLLECTION)
+    result = collection.get(ids=[rule_id])
+    if not result["ids"]:
+        return None
+    meta = result["metadatas"][0]
+    return {
+        "rule_id": result["ids"][0],
+        "title": meta["title"],
+        "text": result["documents"][0],
+        "source": meta["source"],
+    }
+
 
 if __name__ == "__main__":
     tests = [
