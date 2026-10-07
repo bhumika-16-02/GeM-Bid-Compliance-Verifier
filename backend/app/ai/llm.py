@@ -13,7 +13,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[2]
 CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "cache"
 
 load_dotenv(BACKEND_DIR / ".env")
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 
 def _get_client():
