@@ -2,6 +2,7 @@ import fitz
 from fastapi import APIRouter, File, UploadFile
 
 
+from app.ai.extract_tender import extract_tender
 router = APIRouter(prefix="/tender", tags=["Tender"])
 
 
@@ -25,47 +26,4 @@ async def upload_tender(file: UploadFile = File(...)):
             "error": "The uploaded PDF contains no readable text"
         }
 
-    requirements = [
-        {
-            "id": "R1",
-            "text": "Valid PAN card of the bidder",
-            "type": "PAN",
-            "mandatory": True,
-        },
-        {
-            "id": "R2",
-            "text": "Valid GST registration certificate",
-            "type": "GST",
-            "mandatory": True,
-        },
-        {
-            "id": "R3",
-            "text": "Udyam (MSME) registration certificate",
-            "type": "UDYAM",
-            "mandatory": True,
-        },
-        {
-            "id": "R4",
-            "text": "OEM authorization letter",
-            "type": "OEM",
-            "mandatory": True,
-        },
-        {
-            "id": "R5",
-            "text": "Local content of at least 50%",
-            "type": "LOCAL_CONTENT",
-            "mandatory": True,
-        },
-        {
-            "id": "R6",
-            "text": "Bidder must not be debarred or blacklisted",
-            "type": "BLACKLIST",
-            "mandatory": True,
-        },
-    ]
-
-    return {
-        "tender_id": "T-001",
-        "title": "Supply of 100 Laptops",
-        "requirements": requirements,
-    }
+    return extract_tender(contents)
