@@ -3,6 +3,7 @@ from fastapi import APIRouter, File, UploadFile
 
 
 from app.ai.extract_tender import extract_tender
+from app.ai.store import save_tender
 router = APIRouter(prefix="/tender", tags=["Tender"])
 
 
@@ -26,4 +27,4 @@ async def upload_tender(file: UploadFile = File(...)):
             "error": "The uploaded PDF contains no readable text"
         }
 
-    return extract_tender(contents)
+    return save_tender(extract_tender(contents))

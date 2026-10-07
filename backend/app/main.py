@@ -3,7 +3,8 @@ from pydantic import BaseModel
 from sqlmodel import Session, delete
 from app.routes.tender import router as tender_router
 from app.routes.bidder import router as bidder_router
-
+from app.ai.pipeline import full_report
+from app.ai.store import get_bidder, get_tender
 from app.models import (
     AuditLog,
     Bidder,
@@ -173,10 +174,23 @@ def compliance_check(
 
 @app.get("/report/{bidder_id}")
 def get_report(
-    bidder_id: int,
+    bidder_id: str,
+    use_ai: bool = True,
     session: Session = Depends(get_session),
 ):
-    bidder = session.get(Bidder, bidder_id)
+    # New path: a bidder uploaded through /bidder/upload (ids like "B-001")
+    stored = get_bidder(bidder_id)
+    if stored:
+        tender = get_tender()
+        if not tender:
+            return {"error": "Upload a tender first"}
+        return full_report(stored, tender, use_ai=use_ai)
+
+    # Old path: a bidder created with POST /bidders (numeric ids)
+    if not bidder_id.isdigit():
+        return {"error": "Bidder not found"}
+
+    bidder = session.get(Bidder, int(bidder_id))
 
     if not bidder:
         return {

@@ -173,6 +173,7 @@ def build_entry(source_file, text, entry):
 def extract_bidder(files, bidder_id="B-001"):
     """files: list of (file_name, path_or_bytes). ONE AI call for all documents."""
     items = [(name, read_pdf_text(src)) for name, src in files]
+    items.sort(key=lambda item: item[0])
 
     raw = ask_json(build_batch_prompt(items), system=SYSTEM)
     by_file = {str(d.get("source_file")): d for d in raw.get("documents", [])}

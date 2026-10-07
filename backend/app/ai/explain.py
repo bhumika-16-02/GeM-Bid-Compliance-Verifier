@@ -173,7 +173,7 @@ def cross_checks(bidder):
 def template_summary(checks, cross, risk):
     passed = sum(1 for c in checks if c["status"] == "PASS")
     text = f"{passed} of {len(checks)} requirements passed. Risk level is {risk}."
-    flagged = [f'{c["requirement"]} ({c["status"]})' for c in checks if c["status"] != "PASS"]
+    flagged = [f'{c["requirement"].rstrip(".")} ({c["status"]})' for c in checks if c["status"] != "PASS"]
     if flagged:
         text += " Needs attention: " + "; ".join(flagged) + "."
     odd = [c["name"] for c in cross if c["status"] != "PASS"]

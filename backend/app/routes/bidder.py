@@ -2,8 +2,8 @@
 from fastapi import APIRouter, File, UploadFile
 from pydantic import BaseModel
 
-from app.ai.extract_bidder import extract_bidder 
-
+from app.ai.extract_bidder import extract_bidder
+from app.ai.store import next_bidder_id, save_bidder, update_documents
 
 router = APIRouter(prefix="/bidder", tags=["Bidder"])
 
@@ -18,8 +18,9 @@ async def update_bidder_fields(
     bidder_id: str,
     data: BidderFieldsUpdate,
 ):
+    updated = update_documents(bidder_id, data.documents)
     return {
-        "ok": True,
+        "ok": updated is not None,
         "bidder_id": bidder_id,
         "documents": data.documents,
     }
@@ -48,5 +49,4 @@ async def upload_bidder_documents(
                 (file.filename, await file.read())
             )
 
-    return extract_bidder(to_extract)
-    
+    return save_bidder(extract_bidder(to_extract, bidder_id=next_bidder_id()))    
