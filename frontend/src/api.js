@@ -2,6 +2,7 @@ import tenderMock from './mock/tender.json'
 import bidderMock from './mock/bidder.json'
 import reportMock from './mock/report.json'
 
+
 // Save the officer's corrections before running the check
 export async function saveBidderFields(bidder) {
   if (USE_MOCK) {
@@ -13,10 +14,18 @@ export async function saveBidderFields(bidder) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ documents: bidder.documents }),
   })
-  if (!res.ok) throw new Error(`Saving fields failed (${res.status})`)
+ if (!res.ok) throw await apiError(res)
   return res.json()
 }
 
+async function apiError(res) {
+  try {
+    const body = await res.json()
+    return new Error(body.detail || `Request failed (${res.status})`)
+  } catch {
+    return new Error(`Request failed (${res.status})`)
+  }
+}
 export async function getReport(bidderId) {
   if (USE_MOCK) {
     await wait(1200)
