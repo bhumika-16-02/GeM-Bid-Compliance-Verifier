@@ -74,7 +74,7 @@ export async function uploadBidderDocs(files, tenderId) {
 }
 
 // true = use mock JSON, false = call B's real backend
-export const USE_MOCK = true
+export const USE_MOCK = false
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
