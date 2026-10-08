@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, delete
 from app.routes.tender import router as tender_router
 from app.routes.bidder import router as bidder_router
+from app.routes.report import router as report_router
 
 from app.models import (
     AuditLog,
@@ -21,6 +22,7 @@ app = FastAPI(
 
 app.include_router(tender_router)
 app.include_router(bidder_router)
+app.include_router(report_router)
 # -----------------------------
 # Request models
 # -----------------------------
