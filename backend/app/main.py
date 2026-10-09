@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from sqlmodel import Session, delete
 from app.routes.tender import router as tender_router
 from app.routes.bidder import router as bidder_router
-from app.routes.report import router as report_router
-
+from app.ai.pipeline import full_report
+from app.ai.store import get_bidder, get_tender
 from app.models import (
     AuditLog,
     Bidder,
@@ -22,7 +22,6 @@ app = FastAPI(
 
 app.include_router(tender_router)
 app.include_router(bidder_router)
-app.include_router(report_router)
 # -----------------------------
 # Request models
 # -----------------------------
@@ -172,6 +171,101 @@ def compliance_check(
 # -----------------------------
 # Report endpoint
 # -----------------------------
+
+@app.get("/report/{bidder_id}")
+def get_report(
+    bidder_id: str,
+    use_ai: bool = True,
+    session: Session = Depends(get_session),
+):
+    # New path: a bidder uploaded through /bidder/upload (ids like "B-001")
+    stored = get_bidder(bidder_id)
+    if stored:
+        tender = get_tender()
+        if not tender:
+            return {"error": "Upload a tender first"}
+        return full_report(stored, tender, use_ai=use_ai)
+
+    # Old path: a bidder created with POST /bidders (numeric ids)
+    if not bidder_id.isdigit():
+        return {"error": "Bidder not found"}
+
+    bidder = session.get(Bidder, int(bidder_id))
+
+    if not bidder:
+        return {
+            "error": "Bidder not found"
+        }
+
+    result = calculate_compliance(
+        pan=bidder.pan,
+        gst=bidder.gst,
+        udyam=bidder.udyam,
+        oem=bidder.oem,
+        local_content=bidder.local_content,
+        blacklist_status=bidder.blacklist_status,
+    )
+
+    requirement_text = {
+        "PAN": "Valid PAN card of the bidder",
+        "GST": "Valid GST registration certificate",
+        "Udyam": "Udyam (MSME) registration certificate",
+        "OEM": "OEM authorization letter",
+        "Local Content": "Local content of at least 50%",
+        "Blacklist": "Bidder must not be debarred or blacklisted",
+    }
+
+    checks = []
+
+    requirement_ids = {
+        "PAN": "R1",
+        "GST": "R2",
+        "Udyam": "R3",
+        "OEM": "R4",
+        "Local Content": "R5",
+        "Blacklist": "R6",
+    }
+
+    for requirement, passed in result["checks"].items():
+        checks.append(
+            {
+                "requirement_id": requirement_ids[requirement],
+                "requirement": requirement_text[requirement],
+                "status": "PASS" if passed else "FAIL",
+                "evidence": (
+                    "Requirement satisfied"
+                    if passed
+                    else "Requirement not satisfied"
+                ),
+                "source": "backend verification",
+                "rule": requirement.upper().replace(" ", "_"),
+            }
+        )
+
+    if result["risk"] == "LOW":
+        recommendation = "APPROVE"
+    elif result["risk"] == "MEDIUM":
+        recommendation = "REVIEW"
+    else:
+        recommendation = "REJECT"
+
+    passed_count = sum(result["checks"].values())
+    total_count = len(result["checks"])
+
+    summary = (
+        f"{passed_count} of {total_count} requirements passed. "
+        f"Risk level is {result['risk']}."
+    )
+
+    return {
+        "bidder_id": f"B-{bidder.id:03d}",
+        "tender_id": "T-001",
+        "score": result["score"],
+        "risk": result["risk"],
+        "recommendation": recommendation,
+        "summary": summary,
+        "checks": checks,
+    }
 
 class DecisionRequest(BaseModel):
     bidder_id: str
