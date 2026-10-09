@@ -1,5 +1,11 @@
+
 fastapi
 uvicorn
 sqlmodel
 python-multipart
 PyMuPDF
+google-genai
+python-dotenv
+chromadb
+sentence-transformers
+ 

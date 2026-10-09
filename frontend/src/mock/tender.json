@@ -1,0 +1,12 @@
+{
+  "tender_id": "T-001",
+  "title": "Supply of 100 Laptops",
+  "requirements": [
+    { "id": "R1", "text": "Valid PAN card of the bidder", "type": "PAN", "mandatory": true },
+    { "id": "R2", "text": "Valid GST registration certificate", "type": "GST", "mandatory": true },
+    { "id": "R3", "text": "Udyam (MSME) registration certificate", "type": "UDYAM", "mandatory": true },
+    { "id": "R4", "text": "OEM authorization letter", "type": "OEM", "mandatory": true },
+    { "id": "R5", "text": "Local content of at least 50%", "type": "LOCAL_CONTENT", "mandatory": true },
+    { "id": "R6", "text": "Bidder must not be debarred or blacklisted", "type": "BLACKLIST", "mandatory": true }
+  ]
+}
